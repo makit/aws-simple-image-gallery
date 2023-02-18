@@ -2,6 +2,7 @@
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.S3;
 using Constructs;
+using System.Collections.Generic;
 
 namespace AwsImageGallery.Constructs
 {
@@ -13,7 +14,7 @@ namespace AwsImageGallery.Constructs
 
             var api = new RestApi(this, "image-gallery-api", new RestApiProps
             {
-                BinaryMediaTypes = new[] { "image/jpeg" }, // TODO: Check
+                BinaryMediaTypes = new[] { "application/octet-stream", "image/jpeg" }, // TODO: Check
                 MinimumCompressionSize = 0, // TODO: Check
             });
             AddUploadEndpoint(api, props.UploadBucket, role);
@@ -27,38 +28,56 @@ namespace AwsImageGallery.Constructs
 
         private static void AddUploadEndpoint(RestApi api, IBucket uploadBucket, Role role)
         {
-            var images = api.Root.AddResource("image");
+            var imageResource = api.Root.AddResource("image");
+            var fileNameResource = imageResource.AddResource("{filename}");
+
             var uploadImageIntegration = new AwsIntegration(new AwsIntegrationProps
             {
                 Service = "s3",
                 IntegrationHttpMethod = "PUT",
-                Path = $"{uploadBucket.BucketName}/{{fileName}}",
+                Path = $"{uploadBucket.BucketName}/{{filename}}",
                 Options = new IntegrationOptions
                 {
                     CredentialsRole = role,
                     PassthroughBehavior = PassthroughBehavior.WHEN_NO_TEMPLATES, // TODO: Check
+                    RequestParameters = new Dictionary<string, string>
+                    {
+                        { "integration.request.path.filename", "method.request.path.filename" }
+                    },
                     IntegrationResponses = new IntegrationResponse[]
                     {
                         new IntegrationResponse
                         {
                             StatusCode = "200",
-                            //ResponseParameters = {
-                            //    { "method.response.header.Content-Type", "integration.response.header.Content-Type" }
-                            //}
+                            ResponseParameters = new Dictionary<string, string>
+                            {
+                                { "method.response.header.Content-Type", "integration.response.header.Content-Type" }
+                            }
                         }
                     }
                 }
             });
-            images.AddMethod("PUT", uploadImageIntegration, new MethodOptions
+
+            fileNameResource.AddMethod("PUT", uploadImageIntegration, new MethodOptions
             {
+                RequestParameters = new Dictionary<string, bool>
+                {
+                    { "method.request.path.filename", true },
+                    { "method.request.header.Accept", true },
+                    { "method.request.header.Content-Type", true },
+                },
                 MethodResponses = new MethodResponse[]
                 {
                     new MethodResponse
                     {
-                        StatusCode = "200"
+                        StatusCode = "200",
+                        ResponseParameters = new Dictionary<string, bool>
+                        {
+                            { "method.response.header.Content-Type", true }
+                        }
                     }
                 }
-            }); // For uploading an image
+            });
         }
 
         private Role CreateRole(ApiConstructProps props)
