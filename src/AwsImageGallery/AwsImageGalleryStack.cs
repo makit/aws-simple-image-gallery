@@ -1,5 +1,9 @@
 using Amazon.CDK;
+using Amazon.CDK.AWS.APIGateway;
+using Amazon.CDK.AWS.S3;
+using Amazon.CDK.AWS.IAM;
 using Constructs;
+using AwsImageGallery.Constructs;
 
 namespace AwsImageGallery
 {
@@ -7,7 +11,12 @@ namespace AwsImageGallery
     {
         internal AwsImageGalleryStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {
-            // The code that defines your stack goes here
+            var storage = new StorageConstruct(this, "storage");
+
+            _ = new ApiConstruct(this, "api", new ApiConstructProps
+            {
+                UploadBucket = storage.UploadBucket,
+            });
         }
     }
 }
