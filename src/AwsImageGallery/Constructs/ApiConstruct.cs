@@ -2,6 +2,7 @@
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.S3;
 using Constructs;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace AwsImageGallery.Constructs
@@ -49,9 +50,14 @@ namespace AwsImageGallery.Constructs
                         new IntegrationResponse
                         {
                             StatusCode = "200",
+                            ContentHandling = ContentHandling.CONVERT_TO_TEXT,
                             ResponseParameters = new Dictionary<string, string>
                             {
-                                { "method.response.header.Content-Type", "integration.response.header.Content-Type" }
+                                { "method.response.header.Content-Type", "'application/json'" }
+                            },
+                            ResponseTemplates = new Dictionary<string, string>
+                            {
+                                { "application/json", "{\"success\":\"true\"}" }
                             }
                         }
                     }
@@ -96,9 +102,9 @@ namespace AwsImageGallery.Constructs
                         new IntegrationResponse
                         {
                             StatusCode = "200",
-                            ResponseParameters = new Dictionary<string, string>
+                            ResponseTemplates = new Dictionary<string, string>
                             {
-                                { "method.response.header.Content-Type", "integration.response.header.Content-Type" }
+                                { "application/json", "{\"success\":\"true\"}" }
                             }
                         }
                     }
@@ -143,9 +149,9 @@ namespace AwsImageGallery.Constructs
                         new IntegrationResponse
                         {
                             StatusCode = "200",
-                            ResponseParameters = new Dictionary<string, string>
+                            ResponseTemplates = new Dictionary<string, string>
                             {
-                                { "method.response.header.Content-Type", "integration.response.header.Content-Type" }
+                                { "application/json", "{\"success\":\"true\"}" }
                             }
                         }
                     }
