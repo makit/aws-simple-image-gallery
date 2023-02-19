@@ -11,8 +11,16 @@ namespace AwsImageGallery.Constructs
 
         public StorageConstruct(Construct scope, string id) : base(scope, id)
         {
-            UploadBucket = new Bucket(this, "gallery-upload");
-            WebBucket = new Bucket(this, "gallery-web");
+            // Destroy both buckets as this isn't a production level application
+            var bucketProps = new BucketProps
+            {
+                AutoDeleteObjects = true,
+                RemovalPolicy = Amazon.CDK.RemovalPolicy.DESTROY,
+                Versioned = false,
+            };
+
+            UploadBucket = new Bucket(this, "gallery-upload", bucketProps);
+            WebBucket = new Bucket(this, "gallery-web", bucketProps);
         }
     }
 }

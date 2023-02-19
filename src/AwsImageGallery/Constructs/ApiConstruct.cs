@@ -14,7 +14,7 @@ namespace AwsImageGallery.Constructs
 
             var api = new RestApi(this, "image-gallery-api", new RestApiProps
             {
-                BinaryMediaTypes = new[] { "application/octet-stream", "image/jpeg" }, // TODO: Check
+                BinaryMediaTypes = new[] { "*/*" }, // TODO: Check - application/octet-stream", "image/jpeg
                 MinimumCompressionSize = 0, // TODO: Check
             });
             AddUploadEndpoint(api, props.UploadBucket, role);
@@ -42,7 +42,8 @@ namespace AwsImageGallery.Constructs
                     PassthroughBehavior = PassthroughBehavior.WHEN_NO_TEMPLATES, // TODO: Check
                     RequestParameters = new Dictionary<string, string>
                     {
-                        { "integration.request.path.filename", "method.request.path.filename" }
+                        { "integration.request.path.filename", "method.request.path.filename" },
+                        { "integration.request.header.Accept", "method.request.path.Accept" }
                     },
                     IntegrationResponses = new IntegrationResponse[]
                     {
@@ -58,7 +59,7 @@ namespace AwsImageGallery.Constructs
                 }
             });
 
-            fileNameResource.AddMethod("PUT", uploadImageIntegration, new MethodOptions
+            fileNameResource.AddMethod("POST", uploadImageIntegration, new MethodOptions
             {
                 RequestParameters = new Dictionary<string, bool>
                 {
@@ -88,7 +89,7 @@ namespace AwsImageGallery.Constructs
             });
             role.AddToPolicy(new PolicyStatement(new PolicyStatementProps
             {
-                Resources = new[] { props.UploadBucket.BucketArn },
+                Resources = new[] { $"{props.UploadBucket.BucketArn}/*" },
                 Actions = new[] { "s3:PutObject" }
             }));
             return role;
