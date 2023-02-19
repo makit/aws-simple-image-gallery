@@ -13,10 +13,7 @@ namespace AwsImageGallery
         {
             var storage = new StorageConstruct(this, "storage");
 
-            _ = new ApiConstruct(this, "api", new ApiConstructProps
-            {
-                UploadBucket = storage.UploadBucket,
-            });
+            _ = new ApiConstruct(this, "api", new ApiConstructProps(storage.UploadBucket, storage.WebBucket));
         }
     }
 }
