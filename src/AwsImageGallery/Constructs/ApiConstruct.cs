@@ -1,8 +1,8 @@
 ﻿using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.IAM;
+using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.S3;
 using Constructs;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace AwsImageGallery.Constructs
@@ -22,8 +22,8 @@ namespace AwsImageGallery.Constructs
             AddUploadEndpoint(api, props.UploadBucket, role);
 
             var categories = api.Root.AddResource("categories");
-            AddListCategoriesEndpoint(categories, props.WebBucket, role);
-            AddListImagesEndpoint(categories, props.WebBucket, role);
+            AddListCategoriesEndpoint(categories, props.WebBucket);
+            AddListImagesEndpoint(categories, props.WebBucket);
         }
 
         private static void AddUploadEndpoint(RestApi api, IBucket uploadBucket, Role role)
@@ -86,30 +86,11 @@ namespace AwsImageGallery.Constructs
             });
         }
 
-        private static void AddListCategoriesEndpoint(Resource categories, IBucket webBucket, Role role)
+        private void AddListCategoriesEndpoint(Resource categories, IBucket webBucket)
         {
-            var integration = new AwsIntegration(new AwsIntegrationProps
-            {
-                Service = "s3",
-                IntegrationHttpMethod = "GET",
-                Path = $"{webBucket.BucketName}?delimiter=/",
-                Options = new IntegrationOptions
-                {
-                    CredentialsRole = role,
-                    PassthroughBehavior = PassthroughBehavior.WHEN_NO_TEMPLATES,
-                    IntegrationResponses = new IntegrationResponse[]
-                    {
-                        new IntegrationResponse
-                        {
-                            StatusCode = "200",
-                            ResponseTemplates = new Dictionary<string, string>
-                            {
-                                { "application/json", "{\"success\":\"true\"}" }
-                            }
-                        }
-                    }
-                }
-            });
+            var lambda = CreateLambda("list-folders-lambda", "ListFoldersFunction", webBucket);
+
+            var integration = new LambdaIntegration(lambda);
 
             categories.AddMethod("GET", integration, new MethodOptions
             {
@@ -127,36 +108,13 @@ namespace AwsImageGallery.Constructs
             });
         }
 
-        private static void AddListImagesEndpoint(Resource categories, IBucket webBucket, Role role)
+        private void AddListImagesEndpoint(Resource categories, IBucket webBucket)
         {
+            var lambda = CreateLambda("list-files-lambda", "ListImagesFunction", webBucket);
+
             var category = categories.AddResource("{category_name}");
 
-            var integration = new AwsIntegration(new AwsIntegrationProps
-            {
-                Service = "s3",
-                IntegrationHttpMethod = "GET",
-                Path = $"{webBucket.BucketName}?prefix={{category_name}}",
-                Options = new IntegrationOptions
-                {
-                    CredentialsRole = role,
-                    PassthroughBehavior = PassthroughBehavior.WHEN_NO_TEMPLATES,
-                    RequestParameters = new Dictionary<string, string>
-                    {
-                        { "integration.request.path.category_name", "method.request.path.category_name" },
-                    },
-                    IntegrationResponses = new IntegrationResponse[]
-                    {
-                        new IntegrationResponse
-                        {
-                            StatusCode = "200",
-                            ResponseTemplates = new Dictionary<string, string>
-                            {
-                                { "application/json", "{\"success\":\"true\"}" }
-                            }
-                        }
-                    }
-                }
-            });
+            var integration = new LambdaIntegration(lambda);
 
             category.AddMethod("GET", integration, new MethodOptions
             {
@@ -178,6 +136,28 @@ namespace AwsImageGallery.Constructs
             });
         }
 
+        private Function CreateLambda(string id, string functionClass, IBucket webBucket)
+        {
+            var lambda = new Function(this, id, new FunctionProps
+            {
+                Runtime = Runtime.DOTNET_6,
+                Architecture = Architecture.ARM_64,
+                Code = Code.FromAsset("./src/Lambdas/AwsImageGallery.Lambda.ListImages/bin/Release/net6.0/linux-arm64/publish"),
+                Handler = $"AwsImageGallery.Lambda.ListImages::AwsImageGallery.Lambda.ListImages.{functionClass}::FunctionHandler",
+                Environment = new Dictionary<string, string>
+                {
+                    { "Bucket", webBucket.BucketName }
+                },
+                Timeout = Amazon.CDK.Duration.Seconds(10)
+            });
+            lambda.AddToRolePolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Resources = new[] { webBucket.BucketArn, $"{webBucket.BucketArn}/*" },
+                Actions = new[] { "s3:ListBucket" }
+            }));
+            return lambda;
+        }
+
         private Role CreateRole(ApiConstructProps props)
         {
             var role = new Role(this, "apigateway-to-s3", new RoleProps
@@ -188,11 +168,6 @@ namespace AwsImageGallery.Constructs
             {
                 Resources = new[] { $"{props.UploadBucket.BucketArn}/*" },
                 Actions = new[] { "s3:PutObject" }
-            }));
-            role.AddToPolicy(new PolicyStatement(new PolicyStatementProps
-            {
-                Resources = new[] { props.WebBucket.BucketArn, $"{props.WebBucket.BucketArn}/*" },
-                Actions = new[] { "s3:ListBucket" }
             }));
             return role;
         }
