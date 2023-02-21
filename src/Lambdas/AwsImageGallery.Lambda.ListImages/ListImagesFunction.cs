@@ -1,4 +1,3 @@
-using Amazon.Lambda.Core;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.S3.Model;
 using Amazon.S3;

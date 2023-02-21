@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AwsImageGallery.Lambda.List
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lambdas", "Lambdas", "{EB5CE1CA-2107-4FD3-95B8-0EA76CABDA7F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AwsImageGallery.Lambda.CatalogueImage", "Lambdas\AwsImageGallery.Lambda.CatalogueImage\AwsImageGallery.Lambda.CatalogueImage.csproj", "{23773400-A7DC-499C-8A07-4DE2720E2EAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,12 +45,25 @@ Global
 		{7CE3813F-7BCD-4107-8025-8DB1A9E31D4D}.Release|x64.Build.0 = Release|Any CPU
 		{7CE3813F-7BCD-4107-8025-8DB1A9E31D4D}.Release|x86.ActiveCfg = Release|Any CPU
 		{7CE3813F-7BCD-4107-8025-8DB1A9E31D4D}.Release|x86.Build.0 = Release|Any CPU
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF}.Debug|x64.Build.0 = Debug|Any CPU
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF}.Debug|x86.Build.0 = Debug|Any CPU
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF}.Release|x64.ActiveCfg = Release|Any CPU
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF}.Release|x64.Build.0 = Release|Any CPU
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF}.Release|x86.ActiveCfg = Release|Any CPU
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7CE3813F-7BCD-4107-8025-8DB1A9E31D4D} = {EB5CE1CA-2107-4FD3-95B8-0EA76CABDA7F}
+		{23773400-A7DC-499C-8A07-4DE2720E2EAF} = {EB5CE1CA-2107-4FD3-95B8-0EA76CABDA7F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {91FDDF2E-9FB7-40BD-88B4-526979E7FB5C}

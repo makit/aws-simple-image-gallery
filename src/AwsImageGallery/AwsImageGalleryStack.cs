@@ -11,7 +11,7 @@ namespace AwsImageGallery
     {
         internal AwsImageGalleryStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {
-            var storage = new StorageConstruct(this, "storage");
+            var storage = new CatalogueConstruct(this, "storage");
 
             _ = new ApiConstruct(this, "api", new ApiConstructProps(storage.UploadBucket, storage.WebBucket));
         }
