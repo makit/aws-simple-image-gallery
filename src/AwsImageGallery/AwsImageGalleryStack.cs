@@ -14,6 +14,8 @@ namespace AwsImageGallery
             var storage = new CatalogueConstruct(this, "storage");
 
             _ = new ApiConstruct(this, "api", new ApiConstructProps(storage.UploadBucket, storage.WebBucket));
+
+            _ = new CDNConstruct(this, "cdn", new CdnConstructProps(storage.WebBucket));
         }
     }
 }

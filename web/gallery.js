@@ -49,7 +49,7 @@ clickCategory = (container, categoryName) => {
     container.innerHTML = '';
 
     for(var image of data) {
-      addCard(container, image, true)
+      addCard(container, `${categoryName}/${image}`, true)
     }
 
     var goBack = addCard(container, 'Go Back', false)
@@ -67,7 +67,8 @@ loadCategories = () => {
 
     for(var category of data) {
       var card = addCard(container, category, false)
-      card.addEventListener('click', () => clickCategory(container, '2023-02-21'));
+      card.setAttribute('data-category', category);
+      card.addEventListener('click', (e) => clickCategory(container, e.currentTarget.getAttribute('data-category')));
     }   
   });
 }

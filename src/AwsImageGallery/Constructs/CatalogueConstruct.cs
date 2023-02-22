@@ -1,9 +1,12 @@
 ﻿using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.S3;
+using Amazon.CDK.AWS.S3.Deployment;
 using Amazon.CDK.AWS.S3.Notifications;
 using Constructs;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Sockets;
 
 namespace AwsImageGallery.Constructs
 {
@@ -25,6 +28,17 @@ namespace AwsImageGallery.Constructs
 
             UploadBucket = new Bucket(this, "gallery-upload", bucketProps);
             WebBucket = new Bucket(this, "gallery-web", bucketProps);
+
+            // Deploy the website to the bucket
+            _ = new BucketDeployment(this, "bucket-deployment", new BucketDeploymentProps
+            {
+                DestinationBucket = WebBucket,
+                Sources = new []
+                {
+                    Source.Asset("web/")
+                },
+                Prune = false,
+            });
 
             var lambda = CreateCatalogueLambda();
 
