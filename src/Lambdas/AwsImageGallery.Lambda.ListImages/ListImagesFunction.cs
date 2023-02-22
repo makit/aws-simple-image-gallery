@@ -58,7 +58,11 @@ public class ListImagesFunction
         return new APIGatewayProxyResponse
         {
             Body = JsonSerializer.Serialize(files),
-            StatusCode = 200
+            StatusCode = 200,
+            Headers = new Dictionary<string, string> {
+                { "Content-Type", "application/json" },
+                { "Access-Control-Allow-Origin", "*" },
+            },
         };
     }
 }

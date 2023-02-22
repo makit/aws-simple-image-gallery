@@ -3,7 +3,6 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.S3.Model;
 using Amazon.S3;
 using System.Text.Json;
-
 namespace AwsImageGallery.Lambda.ListImages;
 
 public class ListFoldersFunction
@@ -41,7 +40,11 @@ public class ListFoldersFunction
         return new APIGatewayProxyResponse
         {
             Body = JsonSerializer.Serialize(folders),
-            StatusCode = 200
+            StatusCode = 200,
+            Headers = new Dictionary<string, string> {
+                { "Content-Type", "application/json" },
+                { "Access-Control-Allow-Origin", "*" },
+            },
         };
     }
 }
