@@ -1,6 +1,6 @@
 # AWS Serverless Simple Image Gallery
 
-This repo contains an AWS Serverless application using CDK top define the Infrastructure, written in C#. This defines an application that will deploy a website, API and simple cataloguing code to allow images to be uploaded via an API and then shown in a simple website.
+This repo contains an AWS Serverless application using CDK to define the Infrastructure, written in C#. This defines an application that will deploy a website, API and simple cataloguing code to allow images to be uploaded via an API and then shown in a simple website.
 
 ## Overview
 
