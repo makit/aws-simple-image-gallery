@@ -9,7 +9,6 @@ namespace AwsImageGallery
     {
         public static void Main(string[] args)
         {
-            // TAG Stack
             var app = new App();
             _ = new AwsImageGalleryStack(app, "AwsImageGalleryStack");
             app.Synth();
